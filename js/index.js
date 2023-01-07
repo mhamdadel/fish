@@ -8,28 +8,32 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
 
 var init = requestAnimationFrame(start);
 player1 = new Player(cw * .1, ch * 2 / 3, '1');
-let randomEnemeySize = Math.floor((Math.random() * player1.size * 2) + 1);
 var wDown = false;
 var sDown = false;
 var aDown = false;
 var dDown = false;
-
-let callDown = 0;
+let endGame = 0;
+let coolDown = 0;
 let Enemies = [];
-Enemies.push(new Enemey(-player1.size, 200, 1, randomEnemeySize));
 
 function start() {
-	clear();
-	renderBackground();
-	checkKeyboardStatus();
-	checkPlayersBounds();
-	checkPlayers_BallCollision();
-	movePlayers();
-	renderPlayers();
-	renderEnemies();
-	enemeyMovement();
+	if(endGame != 1) {
+		clear();
+		renderBackground();
+		checkKeyboardStatus();
+		checkPlayersBounds();
+		checkPlayers_BallCollision();
+		movePlayers();
+		renderPlayers();
+		renderEnemies();
+		enemeyMovement();
+		pushEnemies();
+	} else {
+		renderGameOver();
+	}
 
 	requestAnimationFrame(start);
+	
 }
 
 function Player(x, y, name) {
@@ -50,6 +54,20 @@ function Enemey(x, y, dir, size) {
 	this.y = y;
 	this.dir = dir;
 	this.size = size;
+}
+
+function pushEnemies(){
+	if(coolDown <= 0) {
+		if (player1.size > 175){
+			randomEnemeySize = Math.floor((Math.random() * player1.size * 1.5) + 1);
+		}else{
+			randomEnemeySize = Math.floor((Math.random() * player1.size * 2) + 1);
+		}
+		let randomEnemeyY = Math.floor((Math.random() * canvas.height) + 1);
+		coolDown = 30;
+		Enemies.push(new Enemey(-player1.size, randomEnemeyY, 1, randomEnemeySize));
+	}
+	coolDown--;
 }
 
 function reset() {
@@ -73,23 +91,23 @@ function movePlayers() {
 
 function checkPlayers_BallCollision() {
 	//between players and themselfs player 1
-	
+
 	for (const enemey of Enemies) {
 		var p1_p2_distance = getDistance(player1.x, player1.y, enemey.x, enemey.y) - player1.size - enemey.size;
 		if (p1_p2_distance < 0) {
 			collide(player1, enemey);
 		}
 	}
-	
+
 }
 
 function collide(cir1, cir2) {
 
-	if (cir1.size > cir2.size){
+	if (cir1.size > cir2.size) {
 		//Enemies.find(en => en === Enemies[0]
-		Enemies.splice(Enemies.indexOf(cir2));
-	}else if (cir1.size < cir2.size){
-		//Enemies.splice(Enemies.indexOf(cir2));
+		cir1.size += Math.floor(cir2.size/6);
+		Enemies.splice(Enemies.indexOf(cir2),1);
+	} else if (cir1.size < cir2.size) {
 		endGame = 1;
 	}
 }
@@ -205,9 +223,12 @@ function checkKeyboardStatus() {
 }
 
 
-function enemeyMovement(){
+function enemeyMovement() {
 	for (let enemey of Enemies) {
 		enemey.x += 5;
+		if ( (enemey.x) > canvas.width) {
+			Enemies.splice(Enemies.indexOf(enemey),1);
+		}
 	}
 }
 
@@ -238,7 +259,15 @@ function renderBackground() {
 	c.fillStyle = "#1ca7d0";
 	c.fillRect(0, 0, canvas.width, canvas.height);
 	c.lineWidth = 10;
-	c.stroke();
+	c.closePath();
+	c.restore();
+}
+
+function renderGameOver() {
+	c.save();
+	c.fillStyle = "#fff";
+	c.font = "50px Arial";
+	c.fillText("أنت يا نوب اللعبة سهلة ^_^", canvas.width/3, canvas.height/2.5);
 	c.closePath();
 	c.restore();
 }
