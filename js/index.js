@@ -14,9 +14,9 @@ var sDown = false;
 var aDown = false;
 var dDown = false;
 
-var Enemies = [
-	new Enemey(40, 200, 1, randomEnemeySize),
-];
+let callDown = 0;
+let Enemies = [];
+Enemies.push(new Enemey(-player1.size, 200, 1, randomEnemeySize));
 
 function start() {
 	clear();
@@ -27,6 +27,7 @@ function start() {
 	movePlayers();
 	renderPlayers();
 	renderEnemies();
+	enemeyMovement();
 
 	requestAnimationFrame(start);
 }
@@ -200,6 +201,13 @@ function checkKeyboardStatus() {
 		if (e.keyCode === 70) {
 			fDown = false;
 		}
+	}
+}
+
+
+function enemeyMovement(){
+	for (let enemey of Enemies) {
+		enemey.x += 5;
 	}
 }
 
