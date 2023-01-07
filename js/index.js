@@ -64,7 +64,7 @@ function pushEnemies(){
 			randomEnemeySize = Math.floor((Math.random() * player1.size * 2) + 1);
 		}
 		let randomEnemeyY = Math.floor((Math.random() * canvas.height) + 1);
-		coolDown = 30;
+		coolDown = 60;
 		Enemies.push(new Enemey(-player1.size, randomEnemeyY, 1, randomEnemeySize));
 	}
 	coolDown--;
